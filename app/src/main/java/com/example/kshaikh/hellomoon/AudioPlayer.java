@@ -16,10 +16,10 @@ public class AudioPlayer {
         }
     }
 
-    public void play(Context c) {
+    public void play(Context c, int resid) {
         stop();
 
-        mPlayer = MediaPlayer.create(c, R.raw.one_small_step);
+        mPlayer = MediaPlayer.create(c, resid);
         mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {

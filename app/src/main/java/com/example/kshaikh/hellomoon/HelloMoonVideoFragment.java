@@ -1,20 +1,26 @@
 package com.example.kshaikh.hellomoon;
 
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.VideoView;
+
+import java.io.IOException;
 
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link HelloMoonFragment#newInstance} factory method to
+ * Use the {@link HelloMoonVideoFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HelloMoonFragment extends Fragment {
+public class HelloMoonVideoFragment extends Fragment implements SurfaceHolder.Callback {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -24,10 +30,9 @@ public class HelloMoonFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private AudioPlayer mPlayer = new AudioPlayer();
+    private VideoView mVideoView;
     private Button mPlayButton;
     private Button mStopButton;
-
 
     /**
      * Use this factory method to create a new instance of
@@ -38,8 +43,8 @@ public class HelloMoonFragment extends Fragment {
      * @return A new instance of fragment HelloMoonFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static HelloMoonFragment newInstance(String param1, String param2) {
-        HelloMoonFragment fragment = new HelloMoonFragment();
+    public static HelloMoonVideoFragment newInstance(String param1, String param2) {
+        HelloMoonVideoFragment fragment = new HelloMoonVideoFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -47,7 +52,7 @@ public class HelloMoonFragment extends Fragment {
         return fragment;
     }
 
-    public HelloMoonFragment() {
+    public HelloMoonVideoFragment() {
         // Required empty public constructor
     }
 
@@ -64,28 +69,53 @@ public class HelloMoonFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_hello_moon, container, false);
+        View v = inflater.inflate(R.layout.fragment_hello_moon_video, container, false);
 
-        mPlayButton = (Button)v.findViewById(R.id.hellomoon_playButton);
+        mVideoView = (VideoView)v.findViewById(R.id.hellomoon_video_view);
+        Uri uri = Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.apollo_17_stroll_2);
+        mVideoView.setVideoURI(uri);
+        mVideoView.seekTo(0);
+
+        mPlayButton = (Button)v.findViewById(R.id.hellomoon_video_playButton);
         mPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mPlayer.play(getActivity(), R.raw.one_small_step);
+                mVideoView.start();
             }
         });
-        mStopButton = (Button)v.findViewById(R.id.hellomoon_stopButton);
+
+        mStopButton = (Button)v.findViewById(R.id.hellomoon_video_stopButton);
         mStopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mPlayer.stop();
+                mVideoView.pause();
             }
         });
+
+
+
         return v;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mPlayer.stop();
+        mVideoView.stopPlayback();
+    }
+
+    @Override
+    public void surfaceCreated(SurfaceHolder surfaceHolder) {
+
+
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
+
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
+
     }
 }
