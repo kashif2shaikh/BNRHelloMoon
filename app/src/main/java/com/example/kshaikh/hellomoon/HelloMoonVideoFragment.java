@@ -1,18 +1,15 @@
 package com.example.kshaikh.hellomoon;
 
 
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.VideoView;
-
-import java.io.IOException;
 
 
 /**
@@ -20,7 +17,7 @@ import java.io.IOException;
  * Use the {@link HelloMoonVideoFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HelloMoonVideoFragment extends Fragment implements SurfaceHolder.Callback {
+public class HelloMoonVideoFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -33,6 +30,8 @@ public class HelloMoonVideoFragment extends Fragment implements SurfaceHolder.Ca
     private VideoView mVideoView;
     private Button mPlayButton;
     private Button mStopButton;
+    private int mCurPos = 1;
+    private boolean mPlaying = false;
 
     /**
      * Use this factory method to create a new instance of
@@ -59,6 +58,7 @@ public class HelloMoonVideoFragment extends Fragment implements SurfaceHolder.Ca
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -66,15 +66,27 @@ public class HelloMoonVideoFragment extends Fragment implements SurfaceHolder.Ca
     }
 
     @Override
+    public void onConfigurationChanged(Configuration newConfig){
+        super.onConfigurationChanged(newConfig);
+
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_hello_moon_video, container, false);
-
-        mVideoView = (VideoView)v.findViewById(R.id.hellomoon_video_view);
+        mVideoView = (VideoView) v.findViewById(R.id.hellomoon_video_view);
         Uri uri = Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.apollo_17_stroll_2);
         mVideoView.setVideoURI(uri);
-        mVideoView.seekTo(0);
+
+        mVideoView.seekTo(mCurPos);
+
+        if(mPlaying) {
+            mVideoView.start();
+        }
 
         mPlayButton = (Button)v.findViewById(R.id.hellomoon_video_playButton);
         mPlayButton.setOnClickListener(new View.OnClickListener() {
@@ -92,30 +104,20 @@ public class HelloMoonVideoFragment extends Fragment implements SurfaceHolder.Ca
             }
         });
 
-
-
         return v;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mVideoView.stopPlayback();
+        //mVideoView.stopPlayback();
     }
 
     @Override
-    public void surfaceCreated(SurfaceHolder surfaceHolder) {
-
-
+    public void onDetach() {
+        super.onDetach();
+        mCurPos = mVideoView.getCurrentPosition();
+        mPlaying = mVideoView.isPlaying();
     }
 
-    @Override
-    public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
-
-    }
-
-    @Override
-    public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-
-    }
 }
